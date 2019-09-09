@@ -1,5 +1,6 @@
 import React from 'react';
-import {API_KEY_WEATHER, API_KEY_IP} from '../constants/constants'
+import {setLocalStorage} from '../setLocalStorage';
+import { API_KEY_WEATHER, API_KEY_IP } from '../constants/constants'
 
 import './App.css';
 
@@ -19,46 +20,50 @@ class App extends React.Component {
 	};
 
 	componentWillMount = () => {
-		if (localStorage.getItem('cityLocSt') === null){
+		if (localStorage.getItem('cityLocSt') === null && localStorage.getItem('continentLocSt') === null) {
 			this.getIP();
 		} else {
-			const json_city  = localStorage.getItem("cityLocSt");
-			const json_continent  = localStorage.getItem("continentLocSt");
-			const cityLocSt = JSON.parse(json_city);
-			const continentLocSt = JSON.parse(json_continent);
-			this.setState({
-				city: cityLocSt,
-				continent_name: continentLocSt
-			}, () => {
-				this.getWeather(this.state.city, this.state.continent_name);
-			})
+			this.getLocalStorageData('cityLocSt', 'continentLocSt');
 		}
 	};
 
-	componentDidUpdate = () => {
-		const cityLocSt = JSON.stringify(this.state.city);
-		const continentLocSt = JSON.stringify(this.state.continent_name);
-		localStorage.setItem("cityLocSt", cityLocSt);
-		localStorage.setItem("continentLocSt", continentLocSt);
+	componentDidMount = () => {
+		this.getIP();
 	};
+
+
+	getLocalStorageData = (cityLocSt, continentLocSt) => {
+		const json_city = localStorage.getItem(cityLocSt);
+		const json_continent = localStorage.getItem(continentLocSt);
+		const cityLocStor = JSON.parse(json_city);
+		const continentLocStor = JSON.parse(json_continent);
+		this.setState({
+			city: cityLocStor,
+			continent_name: continentLocStor
+		}, () => {
+			this.getWeather(this.state.city, this.state.continent_name);
+		})
+	}
+
 
 	getIP = async () => {
 		const api_ip = await fetch(`http://api.ipstack.com/check?access_key=${API_KEY_IP}`);
 		const data_ip = await api_ip.json();
-		console.log(data_ip)
+		console.log(data_ip);
 		this.setState({
 			city: data_ip.city,
 			country: data_ip.country_name,
 			flag: data_ip.location.country_flag,
 			continent_name: data_ip.continent_name
-		});
+		},() => setLocalStorage(this.state.city, this.state.continent_name));
 		this.getWeather(this.state.city, this.state.continent_name);
 	};
 
 	getWeather = async (city, continent_name) => {
-		const api_weather = await fetch(`https://api.openweathermap.org/data/2.5/
-		weather?q=${city}&appid=${API_KEY_WEATHER}&units=metric`);
+		const api_weather = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY_WEATHER}&units=metric`);
 		const data_weather = await api_weather.json();
+
+		console.log(data_weather);
 
 		const sunset = data_weather.sys.sunset;
 		const sunrise = data_weather.sys.sunrise;
@@ -88,11 +93,11 @@ class App extends React.Component {
 	};
 
 	render() {
-		const {temp , temp_max, sunset, sunrise,
-			country, city, flag, pressure, temp_min, continent_name} = this.state;
-		return(
+		const { temp, temp_max, sunset, sunrise,
+			country, city, flag, pressure, temp_min, continent_name } = this.state;
+		return (
 			<div>
-
+				<img src={flag} alt="" />
 			</div>
 		)
 	}
