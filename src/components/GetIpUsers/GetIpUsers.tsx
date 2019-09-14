@@ -8,7 +8,7 @@ export async function getIpUsers(update: (any) => any): Promise<any> {
     const data_ip = await api_ip.json();
 
     update({
-        ipDate: data_ip
+        ipData: data_ip
     });
     
     setLocalStorage(data_ip, 'ipData');

@@ -68,10 +68,10 @@ export interface IAppState {
 
 class App extends React.Component<{}, IAppState> {
 
-	public state = {
-		ipData: {},
-		weatherDate: {},
-		timeData: {}
+	state = {
+		ipData: {} as IdData,
+		weatherDate: {} as WeatherData,
+		timeData: {} as TimeData
 		// temp: '',
 		// temp_min: '',
 		// temp_max: '',
@@ -82,13 +82,12 @@ class App extends React.Component<{}, IAppState> {
 		// country: '',
 		// continent_name: '',
 		// flag: ''
-	};
+	}
 
 	public componentWillMount(): void {
 		if (localStorage.getItem('ipData') === null && localStorage.getItem('weatherDate') === null
 			&& localStorage.getItem('timeData') === null) {
 			this.getInfo();
-
 		} else {
 			this.getLocalStorageData('ipData');
 			this.getLocalStorageData('weatherDate');
@@ -98,8 +97,8 @@ class App extends React.Component<{}, IAppState> {
 
 	private async getInfo() : Promise<any> {
 		await getIpUsers(this.updateDate.bind(this));
-		// await getWeather(this.state.ipDate.city, this.updateDate.bind(this));
-		// await getTime(this.state.ipDate.continent_name, this.state.ipDate.city, this.updateDate.bind(this));
+		await getWeather(this.state.ipData.city, this.updateDate.bind(this));
+		await getTime(this.state.ipData.continent_name, this.state.ipData.city, this.updateDate.bind(this));
 	}
 
 	private getLocalStorageData (date: string): void {
