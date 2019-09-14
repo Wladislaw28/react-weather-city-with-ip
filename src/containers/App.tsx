@@ -5,25 +5,86 @@ import { getTime } from '../components/GetTime/GetTime';
 
 import './App.css';
 
-class App extends React.Component {
+export interface MainWeather {
+	humidity: number;
+	pressure: number;
+	temp: number;
+	temp_max: number;
+	temp_min: number;
+}
 
-	state = {
+export interface SysWeather {
+	sunrise: number;
+	sunset: number;
+}
+
+export interface Weather {
+	main: string;
+	description: string;
+	icon: string;
+}
+
+export interface WindWeather {
+	speed: number;
+}
+
+export interface WeatherData {
+	main: MainWeather;
+	sys: SysWeather;
+	weather: Array<Weather>;
+	wind: WindWeather;
+}
+
+
+
+export interface LanguagesIp {
+	name: string;
+}
+
+export interface IdData {
+	city: string;
+	country_name: string;
+	continent_name: string;
+	ip: string;
+	country_flag: string;
+	calling_code: string;
+	languages: Array<LanguagesIp>;
+}
+
+
+export interface TimeData {
+	datetime: string;
+	day_of_week: number;
+	day_of_year: number;
+}
+
+
+
+export interface IAppState {
+	ipData: IdData;
+	weatherDate: WeatherData;
+	timeData: TimeData;
+}
+
+class App extends React.Component<{}, IAppState> {
+
+	public state = {
 		ipData: {},
 		weatherDate: {},
-		timeData: {},
-		temp: '',
-		temp_min: '',
-		temp_max: '',
-		sunrise: '',
-		sunset: '',
-		pressure: '',
-		city: '',
-		country: '',
-		continent_name: '',
-		flag: ''
+		timeData: {}
+		// temp: '',
+		// temp_min: '',
+		// temp_max: '',
+		// sunrise: '',
+		// sunset: '',
+		// pressure: '',
+		// city: '',
+		// country: '',
+		// continent_name: '',
+		// flag: ''
 	};
 
-	componentWillMount = () => {
+	public componentWillMount(): void {
 		if (localStorage.getItem('ipData') === null && localStorage.getItem('weatherDate') === null
 			&& localStorage.getItem('timeData') === null) {
 			this.getInfo();
@@ -35,14 +96,14 @@ class App extends React.Component {
 		}
 	};
 
-	getInfo = async () => {
+	private async getInfo() : Promise<any> {
 		await getIpUsers(this.updateDate.bind(this));
-		await getWeather(this.state.ipDate.city, this.updateDate.bind(this));
-		await getTime(this.state.ipDate.continent_name, this.state.ipDate.city, this.updateDate.bind(this));
+		// await getWeather(this.state.ipDate.city, this.updateDate.bind(this));
+		// await getTime(this.state.ipDate.continent_name, this.state.ipDate.city, this.updateDate.bind(this));
 	}
 
-	getLocalStorageData = (date) => {
-		const json_data = localStorage.getItem(date);
+	private getLocalStorageData (date: string): void {
+		const json_data: any = localStorage.getItem(date);
 		const dataLocStor = JSON.parse(json_data);
 		if (date === 'ipData') {
 			this.setState({
@@ -85,20 +146,15 @@ class App extends React.Component {
 	// 	})
 	// };
 
-	updateDate(config) {
+	public updateDate(config: any) {
 		this.setState(config);
 	}
 
-	render() {
-		const { temp, temp_max, sunset, sunrise,
-			country, city, flag, pressure, temp_min, continent_name } = this.state;
+	public render() {
+		
 		return (
 			<div>
-				<img src={flag} alt="" />
-				<p>{temp}</p>
-				<p>{country}</p>
-				<p>{city}</p>
-				<p>{pressure}</p>
+				
 			</div>
 		)
 	}
