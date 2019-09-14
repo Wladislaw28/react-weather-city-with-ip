@@ -1,12 +1,16 @@
 import React from 'react';
-import {setLocalStorage} from '../setLocalStorage';
-import { API_KEY_WEATHER, API_KEY_IP } from '../constants/constants'
+import { getIpUsers } from '../components/GetIpUsers/GetIpUsers';
+import { getWeather } from '../components/GetWeather/GetWeather';
+import { getTime } from '../components/GetTime/GetTime';
 
 import './App.css';
 
 class App extends React.Component {
 
 	state = {
+		ipData: {},
+		weatherDate: {},
+		timeData: {},
 		temp: '',
 		temp_min: '',
 		temp_max: '',
@@ -20,77 +24,70 @@ class App extends React.Component {
 	};
 
 	componentWillMount = () => {
-		if (localStorage.getItem('cityLocSt') === null && localStorage.getItem('continentLocSt') === null) {
-			this.getIP();
+		if (localStorage.getItem('ipData') === null && localStorage.getItem('weatherDate') === null
+			&& localStorage.getItem('timeData') === null) {
+			this.getInfo();
+
 		} else {
-			this.getLocalStorageData('cityLocSt', 'continentLocSt');
+			this.getLocalStorageData('ipData');
+			this.getLocalStorageData('weatherDate');
+			this.getLocalStorageData('timeData');
 		}
 	};
 
-	componentDidMount = () => {
-		this.getIP();
-	};
+	getInfo = async () => {
+		await getIpUsers(this.updateDate.bind(this));
+		await getWeather(this.state.ipDate.city, this.updateDate.bind(this));
+		await getTime(this.state.ipDate.continent_name, this.state.ipDate.city, this.updateDate.bind(this));
+	}
 
-
-	getLocalStorageData = (cityLocSt, continentLocSt) => {
-		const json_city = localStorage.getItem(cityLocSt);
-		const json_continent = localStorage.getItem(continentLocSt);
-		const cityLocStor = JSON.parse(json_city);
-		const continentLocStor = JSON.parse(json_continent);
-		this.setState({
-			city: cityLocStor,
-			continent_name: continentLocStor
-		}, () => {
-			this.getWeather(this.state.city, this.state.continent_name);
-		})
+	getLocalStorageData = (date) => {
+		const json_data = localStorage.getItem(date);
+		const dataLocStor = JSON.parse(json_data);
+		if (date === 'ipData') {
+			this.setState({
+				ipData: dataLocStor
+			})
+		} else if (date === 'weatherDate') {
+			this.setState({
+				weatherDate: dataLocStor
+			})
+		} else {
+			this.setState({
+				timeData: dataLocStor
+			})
+		}
 	}
 
 
-	getIP = async () => {
-		const api_ip = await fetch(`http://api.ipstack.com/check?access_key=${API_KEY_IP}`);
-		const data_ip = await api_ip.json();
-		console.log(data_ip);
-		this.setState({
-			city: data_ip.city,
-			country: data_ip.country_name,
-			flag: data_ip.location.country_flag,
-			continent_name: data_ip.continent_name
-		},() => setLocalStorage(this.state.city, this.state.continent_name));
-		this.getWeather(this.state.city, this.state.continent_name);
-	};
+	// getWeather = async (city) => {
+	// 	const api_weather = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY_WEATHER}&units=metric`);
+	// 	const data_weather = await api_weather.json();
 
-	getWeather = async (city, continent_name) => {
-		const api_weather = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY_WEATHER}&units=metric`);
-		const data_weather = await api_weather.json();
+	// 	const sunset = data_weather.sys.sunset;
+	// 	const sunrise = data_weather.sys.sunrise;
 
-		console.log(data_weather);
+	// 	const date = new Date();
+	// 	date.setTime(sunset);
+	// 	const sunset_date = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+	// 	date.setTime(sunrise);
+	// 	const sunrise_date = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
 
-		const sunset = data_weather.sys.sunset;
-		const sunrise = data_weather.sys.sunrise;
+	// 	this.setState({
+	// 		temp: data_weather.main.temp,
+	// 		temp_min: data_weather.main.temp_min,
+	// 		temp_max: data_weather.main.temp_max,
+	// 		sunrise: sunrise_date,
+	// 		sunset: sunset_date,
+	// 		pressure: data_weather.main.pressure
+	// 	}, () => {
+	// 		this.getTime(city);
+	// 	})
+	// };
 
-		const date = new Date();
-		date.setTime(sunset);
-		const sunset_date = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-		date.setTime(sunrise);
-		const sunrise_date = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-
-		this.setState({
-			temp: data_weather.main.temp,
-			temp_min: data_weather.main.temp_min,
-			temp_max: data_weather.main.temp_max,
-			sunrise: sunrise_date,
-			sunset: sunset_date,
-			pressure: data_weather.main.pressure
-		}, () => {
-			this.getTime(continent_name, city);
-		})
-	};
-
-	getTime = async (continent, city) => {
-		const api_time = await fetch(`http://worldtimeapi.org/api/timezone/${continent}/${city}`);
-		const data_time = await api_time.json();
-		console.log(data_time)
-	};
+	updateDate(config) {
+		this.setState(config);
+	}
 
 	render() {
 		const { temp, temp_max, sunset, sunrise,
@@ -98,6 +95,10 @@ class App extends React.Component {
 		return (
 			<div>
 				<img src={flag} alt="" />
+				<p>{temp}</p>
+				<p>{country}</p>
+				<p>{city}</p>
+				<p>{pressure}</p>
 			</div>
 		)
 	}
