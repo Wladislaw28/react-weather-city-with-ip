@@ -1,0 +1,14 @@
+body {
+	background-color: black;
+}
+
+.app {
+    
+}
+
+.app_container {
+    height: 500px;
+    width: 700px;
+    background-color: white;
+    margin: 0 auto;
+}

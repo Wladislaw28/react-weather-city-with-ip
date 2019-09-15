@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { API_KEY_WEATHER } from '../../constants/constants';
-import {setLocalStorage} from '../../setLocalStorage';
+import { API_KEY_WEATHER } from '../../../constants/constants';
+import {setLocalStorage} from '../../../setLocalStorage';
 
 export async function getWeather(city: string, update: (any) => any): Promise<any> {
 

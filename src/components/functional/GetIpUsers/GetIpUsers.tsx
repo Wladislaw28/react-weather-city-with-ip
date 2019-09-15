@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { API_KEY_IP } from '../../constants/constants';
-import { setLocalStorage } from '../../setLocalStorage';
+import { API_KEY_IP } from '../../../constants/constants';
+import { setLocalStorage } from '../../../setLocalStorage';
 
 export async function getIpUsers(update: (any) => any): Promise<any> {
 

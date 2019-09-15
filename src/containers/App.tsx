@@ -1,7 +1,7 @@
 import React from 'react';
-import { getIpUsers } from '../components/GetIpUsers/GetIpUsers';
-import { getWeather } from '../components/GetWeather/GetWeather';
-import { getTime } from '../components/GetTime/GetTime';
+import { getIpUsers } from '../components/functional/GetIpUsers/GetIpUsers';
+import { getWeather } from '../components/functional/GetWeather/GetWeather';
+import { getTime } from '../components/functional/GetTime/GetTime';
 
 import './App.css';
 
@@ -36,18 +36,21 @@ export interface WeatherData {
 }
 
 
+export interface Location {
+	country_flag: string;
+	calling_code: string;
+}
 
 export interface LanguagesIp {
 	name: string;
 }
 
-export interface IdData {
+export interface IpData {
 	city: string;
 	country_name: string;
 	continent_name: string;
 	ip: string;
-	country_flag: string;
-	calling_code: string;
+	location: Location;
 	languages: Array<LanguagesIp>;
 }
 
@@ -61,27 +64,17 @@ export interface TimeData {
 
 
 export interface IAppState {
-	ipData: IdData;
+	ipData: IpData;
 	weatherDate: WeatherData;
 	timeData: TimeData;
 }
 
 class App extends React.Component<{}, IAppState> {
 
-	state = {
-		ipData: {} as IdData,
+	public state = {
+		ipData: {} as IpData,
 		weatherDate: {} as WeatherData,
 		timeData: {} as TimeData
-		// temp: '',
-		// temp_min: '',
-		// temp_max: '',
-		// sunrise: '',
-		// sunset: '',
-		// pressure: '',
-		// city: '',
-		// country: '',
-		// continent_name: '',
-		// flag: ''
 	}
 
 	public componentWillMount(): void {
@@ -95,13 +88,13 @@ class App extends React.Component<{}, IAppState> {
 		}
 	};
 
-	private async getInfo() : Promise<any> {
-		await getIpUsers(this.updateDate.bind(this));
-		await getWeather(this.state.ipData.city, this.updateDate.bind(this));
-		await getTime(this.state.ipData.continent_name, this.state.ipData.city, this.updateDate.bind(this));
+	private async getInfo(): Promise<any> {
+		await getIpUsers(this.updateDate);
+		await getWeather(this.state.ipData.city, this.updateDate);
+		await getTime(this.state.ipData.continent_name, this.state.ipData.city, this.updateDate);
 	}
 
-	private getLocalStorageData (date: string): void {
+	private getLocalStorageData(date: string): void {
 		const json_data: any = localStorage.getItem(date);
 		const dataLocStor = JSON.parse(json_data);
 		if (date === 'ipData') {
@@ -145,15 +138,22 @@ class App extends React.Component<{}, IAppState> {
 	// 	})
 	// };
 
-	public updateDate(config: any) {
+	public updateDate = (config: any) => {
 		this.setState(config);
 	}
 
 	public render() {
-		
+
 		return (
-			<div>
-				
+			<div className="app">
+				<div className="app_container" >
+					<div className="image_flag">
+						<img src={this.state.ipData.location.country_flag} alt="flag"/>
+					</div>
+					<div className="info">
+
+					</div>
+				</div>
 			</div>
 		)
 	}

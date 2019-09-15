@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { setLocalStorage } from '../../setLocalStorage';
+import { setLocalStorage } from '../../../setLocalStorage';
 
 export async function getTime(continent_name: string, city: string, update: (any) => any): Promise<any> {
 
